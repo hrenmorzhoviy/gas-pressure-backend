@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Редактирование черновика{% endblock %}
+{% block content %}
+<h1>Редактирование услуги (черновик)</h1>
+{% if service %}
+<div class="draft-card">
+    <div class="draft-header">
+        <h2>{{ service.name }}</h2>
+        <span class="status-badge draft">Черновик</span>
+    </div>
+    <div class="draft-image">
+        <img src="{{ service.image_url }}" alt="{{ service.name }}">
+    </div>
+    <div class="draft-video">
+        <video controls>
+            <source src="{{ service.video_url }}" type="video/mp4">
+        </video>
+    </div>
+    <div class="draft-form">
+        <div class="form-group">
+            <label>Название</label>
+            <input type="text" value="{{ service.name }}" disabled>
+        </div>
+        <div class="form-group">
+            <label>Описание</label>
+            <textarea rows="3" disabled>{{ service.description }}</textarea>
+        </div>
+        <div class="form-group">
+            <label>Молярная масса (г/моль)</label>
+            <input type="number" value="{{ service.molar_mass }}" disabled>
+        </div>
+        <div class="form-group">
+            <label>Газовая постоянная (Дж/кг·К)</label>
+            <input type="number" value="{{ service.gas_constant }}" disabled>
+        </div>
+        <div class="form-note">
+            <p>ℹ️ Сохранение будет доступно в следующих лабораторных работах.</p>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="error-message">
+    <h2>Черновик не найден</h2>
+    <a href="/" class="btn">Вернуться к списку</a>
+</div>
+{% endif %}
+{% endblock %}

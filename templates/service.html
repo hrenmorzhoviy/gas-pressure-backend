@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ service.name }}{% endblock %}
+{% block content %}
+<div class="detail-page">
+    <div class="tiktok-container">
+        <video autoplay muted loop playsinline>
+            <source src="{{ service.video_url }}" type="video/mp4">
+        </video>
+        <div class="description-overlay">
+            <h2>{{ service.name }}</h2>
+            <p>{{ service.description }}</p>
+            <p>Молярная масса: {{ service.molar_mass }} г/моль</p>
+            <p>Газовая постоянная: {{ service.gas_constant }} Дж/(кг·К)</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

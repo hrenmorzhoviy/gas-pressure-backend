@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Доступные газы</h1>
+<div class="grid-container">
+    {% for service in services %}
+    <a href="/service/{{ service.id }}" class="card-link">
+        <div class="card">
+            <img src="{{ service.image_url }}" alt="{{ service.name }}" class="card-img">
+            <h3>{{ service.name }}</h3>
+            <p>{{ service.description }}</p>
+            <p class="price">Молярная масса: {{ service.molar_mass }} г/моль</p>
+            <p class="likes">❤️ {{ service.likes_count }}</p>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}

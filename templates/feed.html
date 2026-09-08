@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{% if service %}{{ service.name }}{% else %}Газ не найден{% endif %}{% endblock %}
+{% block content %}
+{% if service %}
+<div class="feed-wrapper">
+    <div class="tiktok-wrapper">
+        <video autoplay muted loop playsinline class="feed-video">
+            <source src="{{ service.video_url }}" type="video/mp4">
+        </video>
+        <div class="feed-overlay">
+            <div class="feed-header">
+                <h2>{{ service.name }}</h2>
+                <div class="likes-block">
+                    <span class="heart">❤️</span>
+                    <span class="likes-count">{{ likes_count }}</span>
+                </div>
+            </div>
+            <p class="feed-description">{{ service.description }}</p>
+            <div class="feed-details">
+                <p><span class="label">Молярная масса:</span> {{ service.molar_mass }} г/моль</p>
+                <p><span class="label">Газовая постоянная:</span> {{ service.gas_constant }} Дж/(кг·К)</p>
+            </div>
+            <div class="feed-actions">
+                <a href="/feed/{{ service.id }}?go_next=true" class="btn-next">Следующий →</a>
+            </div>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="error-message">
+    <h2>Услуга не найдена</h2>
+    <p>Нет доступных опубликованных услуг.</p>
+    <a href="/" class="btn">Вернуться к списку</a>
+</div>
+{% endif %}
+{% endblock %}
