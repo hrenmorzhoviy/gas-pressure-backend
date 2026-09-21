@@ -1,39 +1,106 @@
-{% extends "base.html" %}
-{% block title %}{% if service %}{{ service.name }}{% else %}Газ не найден{% endif %}{% endblock %}
-{% block content %}
-{% if service %}
-<div class="feed-wrapper">
-    <div class="tiktok-wrapper">
-        <video autoplay muted loop playsinline class="feed-video">
-            <source src="{{ service.video_url }}" type="video/mp4">
-        </video>
-        <div class="feed-overlay">
-            <div class="feed-header">
-                <h2>{{ service.name }}</h2>
-                <div class="likes-block">
-                    <span class="heart">❤️</span>
-                    <span class="likes-count">{{ likes_count }}</span>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=390px, initial-scale=1.0">
+    <title>{% if gas %}{{ gas.name }}{% else %}Лента{% endif %} — Газовый каталог</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div class="app-shell">
+
+{% if gas %}
+
+<!-- ЛЕНТА: видео на весь экран, контент поверх -->
+<div class="feed-page">
+
+    <!-- Видео (вертикальное) -->
+    <video class="feed-video" autoplay muted loop playsinline>
+        <source src="{{ gas.video_url }}" type="video/mp4">
+    </video>
+
+    <!-- Градиентная подложка снизу -->
+    <div class="feed-gradient"></div>
+
+    <!-- Контент поверх видео -->
+    <div class="feed-overlay">
+
+        <!-- Левая колонка: название + описание с Ещё/Скрыть -->
+        <div class="feed-left">
+            <div class="feed-gas-name">{{ gas.name }}</div>
+
+            <div class="feed-desc-wrap">
+                <!-- Чекбокс для переключения (без JS) -->
+                <input type="checkbox" class="feed-desc-toggle" id="desc-toggle">
+
+                <p class="feed-desc-short">{{ gas.description }}</p>
+                <p class="feed-desc-full">{{ gas.description }}</p>
+
+                <label for="desc-toggle" class="feed-desc-btn">Ещё ▾</label>
+            </div>
+        </div>
+
+        <!-- Правая колонка: параметры + лайки + кнопка -->
+        <div class="feed-right">
+
+            <!-- Параметры по теме -->
+            <div class="feed-params">
+                <div class="feed-param">
+                    Молярная масса
+                    <span>{{ gas.molar_mass }} г/моль</span>
+                </div>
+                <div class="feed-param">
+                    Плотность
+                    <span>{{ gas.density }} кг/м³</span>
                 </div>
             </div>
-            <p class="feed-description">{{ service.description }}</p>
-            <div class="feed-details">
-                <p><span class="label">Молярная масса:</span> {{ service.molar_mass }} г/моль</p>
-                <p><span class="label">Газовая постоянная:</span> {{ service.gas_constant }} Дж/(кг·К)</p>
+
+            <!-- Лайки -->
+            <div class="feed-likes">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+                             2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
+                             C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5
+                             c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                <span class="feed-likes-count">{{ likes_count }}</span>
             </div>
-            <div class="feed-actions">
-                <a href="/feed/{{ service.id }}?go_next=true" class="btn-next">Следующий →</a>
-            </div>
-        </div>
-        <div class="progress-bar">
-            <div class="progress-fill"></div>
+
+            <!-- Кнопка "Следующий" -->
+            <a href="/feed/{{ gas.id }}?next=true" class="btn-next">Следующий →</a>
+
         </div>
     </div>
+
 </div>
+
 {% else %}
-<div class="error-message">
-    <h2>Услуга не найдена</h2>
-    <p>Нет доступных опубликованных услуг.</p>
-    <a href="/" class="btn">Вернуться к списку</a>
+
+<!-- Газ не найден -->
+<div class="feed-empty">
+    <h2>Газ не найден</h2>
+    <p>Нет доступных опубликованных газов.</p>
+    <a href="/gases/" class="btn-next" style="margin-top:8px;">К списку</a>
 </div>
+
 {% endif %}
-{% endblock %}
+
+<!-- НИЖНЯЯ НАВИГАЦИЯ -->
+<nav class="bottom-nav">
+    <a href="/feed/" class="nav-item active">
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        Лента
+    </a>
+    <a href="/add/" class="nav-item">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Добавить
+    </a>
+    <a href="/gases/" class="nav-item">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Газы
+    </a>
+</nav>
+
+</div>
+</body>
+</html>

@@ -1,47 +1,138 @@
-{% extends "base.html" %}
-{% block title %}Редактирование черновика{% endblock %}
-{% block content %}
-<h1>Редактирование услуги (черновик)</h1>
-{% if service %}
-<div class="draft-card">
-    <div class="draft-header">
-        <h2>{{ service.name }}</h2>
-        <span class="status-badge draft">Черновик</span>
-    </div>
-    <div class="draft-image">
-        <img src="{{ service.image_url }}" alt="{{ service.name }}">
-    </div>
-    <div class="draft-video">
-        <video controls>
-            <source src="{{ service.video_url }}" type="video/mp4">
-        </video>
-    </div>
-    <div class="draft-form">
-        <div class="form-group">
-            <label>Название</label>
-            <input type="text" value="{{ service.name }}" disabled>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=390px, initial-scale=1.0">
+    <title>Добавить газ — Каталог</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div class="app-shell">
+
+    <div class="add-page">
+
+        <!-- Заголовок + бейдж статуса -->
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+            <h1 class="add-page-title">Добавить газ</h1>
+            {% if gas %}
+            <span class="status-badge">Черновик</span>
+            {% endif %}
         </div>
-        <div class="form-group">
-            <label>Описание</label>
-            <textarea rows="3" disabled>{{ service.description }}</textarea>
+
+        {% if gas %}
+
+        <!-- СЕКЦИЯ 1: Медиафайлы (изображение + видео) -->
+        <div class="add-section">
+            <div class="add-section-label">Медиафайлы</div>
+
+            <!-- Превью из коллекции -->
+            <div class="media-preview-row">
+                <div class="media-thumb">
+                    <div class="media-thumb-label">Изображение</div>
+                    <img src="{{ gas.image_url }}" alt="{{ gas.name }}"
+                         onerror="this.src='/static/img/placeholder.jpg'">
+                </div>
+                <div class="media-thumb">
+                    <div class="media-thumb-label">Видео</div>
+                    <video controls muted playsinline>
+                        <source src="{{ gas.video_url }}" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+
+            <!-- Выбор файла изображения из проводника -->
+            <div class="form-group">
+                <label>Заменить изображение</label>
+                <div class="file-input-wrapper">
+                    <input type="file" accept="image/*" name="image_file">
+                    <div class="file-input-btn">
+                        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        Выбрать изображение
+                    </div>
+                </div>
+            </div>
+
+            <!-- Выбор файла видео из проводника -->
+            <div class="form-group">
+                <label>Заменить видео</label>
+                <div class="file-input-wrapper">
+                    <input type="file" accept="video/*" name="video_file">
+                    <div class="file-input-btn">
+                        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        Выбрать видео
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label>Молярная масса (г/моль)</label>
-            <input type="number" value="{{ service.molar_mass }}" disabled>
+
+        <!-- СЕКЦИЯ 2: Текстовые поля -->
+        <div class="add-section">
+            <div class="add-section-label">Основная информация</div>
+
+            <div class="form-group">
+                <label for="gas-name">Название газа</label>
+                <input type="text" id="gas-name" name="name" value="{{ gas.name }}">
+            </div>
+
+            <div class="form-group">
+                <label for="gas-desc">Описание</label>
+                <textarea id="gas-desc" name="description" rows="4">{{ gas.description }}</textarea>
+            </div>
         </div>
-        <div class="form-group">
-            <label>Газовая постоянная (Дж/кг·К)</label>
-            <input type="number" value="{{ service.gas_constant }}" disabled>
+
+        <!-- СЕКЦИЯ 3: Поля по теме -->
+        <div class="add-section">
+            <div class="add-section-label">Параметры газа</div>
+
+            <div class="form-group">
+                <label for="gas-molar">Молярная масса (г/моль)</label>
+                <input type="number" id="gas-molar" name="molar_mass"
+                       value="{{ gas.molar_mass }}" step="0.001" min="0">
+            </div>
+
+            <div class="form-group">
+                <label for="gas-density">Плотность (кг/м³)</label>
+                <input type="number" id="gas-density" name="density"
+                       value="{{ gas.density }}" step="0.0001" min="0">
+            </div>
         </div>
+
+        <!-- Примечание (без сохранения в ЛР1) -->
         <div class="form-note">
-            <p>ℹ️ Сохранение будет доступно в следующих лабораторных работах.</p>
+            ℹ️ В первой лабораторной работе сохранение недоступно.<br>
+            Поля можно редактировать для ознакомления с интерфейсом.
         </div>
+
+        {% else %}
+
+        <!-- Черновик не найден -->
+        <div class="add-section" style="text-align:center;padding:32px 16px;">
+            <p style="color:#8A96A8;font-size:15px;">Черновик не найден.</p>
+            <a href="/gases/" class="btn-filter" style="margin-top:16px;display:inline-block;width:auto;padding:10px 28px;text-decoration:none;">
+                К списку газов
+            </a>
+        </div>
+
+        {% endif %}
+
     </div>
+
+    <!-- НИЖНЯЯ НАВИГАЦИЯ -->
+    <nav class="bottom-nav">
+        <a href="/feed/" class="nav-item">
+            <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            Лента
+        </a>
+        <a href="/add/" class="nav-item active">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            Добавить
+        </a>
+        <a href="/gases/" class="nav-item">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Газы
+        </a>
+    </nav>
+
 </div>
-{% else %}
-<div class="error-message">
-    <h2>Черновик не найден</h2>
-    <a href="/" class="btn">Вернуться к списку</a>
-</div>
-{% endif %}
-{% endblock %}
+</body>
+</html>
