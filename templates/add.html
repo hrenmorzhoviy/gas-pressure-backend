@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=390px, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>Добавить газ — Каталог</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
@@ -11,120 +11,150 @@
 
     <div class="add-page">
 
-        <!-- Заголовок + бейдж статуса -->
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-            <h1 class="add-page-title">Добавить газ</h1>
+        <!-- Заголовок -->
+        <div class="add-header">
+            <h1 class="page-title" style="padding:0;">Добавить газ</h1>
             {% if gas %}
-            <span class="status-badge">Черновик</span>
+            <span class="add-badge">Черновик</span>
             {% endif %}
         </div>
 
         {% if gas %}
-
-        <!-- СЕКЦИЯ 1: Медиафайлы (изображение + видео) -->
+        <!-- =================== ПРОСМОТР ЧЕРНОВИКА =================== -->
         <div class="add-section">
-            <div class="add-section-label">Медиафайлы</div>
+            <h2 class="add-section-title">📎 Медиафайлы</h2>
 
-            <!-- Превью из коллекции -->
-            <div class="media-preview-row">
-                <div class="media-thumb">
-                    <div class="media-thumb-label">Изображение</div>
-                    <img src="{{ gas.image_url }}" alt="{{ gas.name }}"
-                         onerror="this.src='/static/img/placeholder.jpg'">
+            <div class="add-media-preview">
+                <!-- Изображение -->
+                <div class="add-media-item">
+                    <label class="add-media-label">Изображение</label>
+                    <img
+                        src="{{ gas.image_url if gas.image_url else '/static/img/placeholder.svg' }}"
+                        alt="{{ gas.name }}"
+                        class="add-preview-img"
+                        onerror="this.src='/static/img/placeholder.svg'"
+                    >
                 </div>
-                <div class="media-thumb">
-                    <div class="media-thumb-label">Видео</div>
-                    <video controls muted playsinline>
-                        <source src="{{ gas.video_url }}" type="video/mp4">
-                    </video>
-                </div>
-            </div>
-
-            <!-- Выбор файла изображения из проводника -->
-            <div class="form-group">
-                <label>Заменить изображение</label>
-                <div class="file-input-wrapper">
-                    <input type="file" accept="image/*" name="image_file">
-                    <div class="file-input-btn">
-                        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                        Выбрать изображение
-                    </div>
-                </div>
-            </div>
-
-            <!-- Выбор файла видео из проводника -->
-            <div class="form-group">
-                <label>Заменить видео</label>
-                <div class="file-input-wrapper">
-                    <input type="file" accept="video/*" name="video_file">
-                    <div class="file-input-btn">
-                        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                        Выбрать видео
-                    </div>
+                <!-- Видео -->
+                <div class="add-media-item">
+                    <label class="add-media-label">Видео</label>
+                    {% if gas.video_url %}
+                    <video
+                        src="{{ gas.video_url }}"
+                        class="add-preview-video"
+                        autoplay loop muted playsinline
+                    ></video>
+                    {% else %}
+                    <div class="add-no-video">Видео не загружено</div>
+                    {% endif %}
                 </div>
             </div>
         </div>
 
-        <!-- СЕКЦИЯ 2: Текстовые поля -->
-        <div class="add-section">
-            <div class="add-section-label">Основная информация</div>
+        <!-- =================== ФОРМА ДОБАВЛЕНИЯ =================== -->
+        <form action="/add/" method="POST" class="add-form">
 
-            <div class="form-group">
-                <label for="gas-name">Название газа</label>
-                <input type="text" id="gas-name" name="name" value="{{ gas.name }}">
+            <div class="add-section">
+                <h2 class="add-section-title">🗂 Медиаключи (Minio)</h2>
+                <label class="add-label">Ключ изображения (image_key)
+                    <input type="text" name="image_key" value="{{ gas.image_key }}" class="add-input"
+                           placeholder="например: hydrogen.jpg">
+                </label>
+                <label class="add-label">Ключ видео (video_key)
+                    <input type="text" name="video_key" value="{{ gas.video_key }}" class="add-input"
+                           placeholder="например: hydrogen.mp4">
+                </label>
             </div>
 
-            <div class="form-group">
-                <label for="gas-desc">Описание</label>
-                <textarea id="gas-desc" name="description" rows="4">{{ gas.description }}</textarea>
-            </div>
-        </div>
-
-        <!-- СЕКЦИЯ 3: Поля по теме -->
-        <div class="add-section">
-            <div class="add-section-label">Параметры газа</div>
-
-            <div class="form-group">
-                <label for="gas-molar">Молярная масса (г/моль)</label>
-                <input type="number" id="gas-molar" name="molar_mass"
-                       value="{{ gas.molar_mass }}" step="0.001" min="0">
+            <div class="add-section">
+                <h2 class="add-section-title">📋 Основная информация</h2>
+                <label class="add-label">Название газа
+                    <input type="text" name="name" value="{{ gas.name }}" class="add-input"
+                           placeholder="например: Водород" required>
+                </label>
+                <label class="add-label">Описание
+                    <textarea name="description" class="add-textarea"
+                              placeholder="Описание газа..." required>{{ gas.description }}</textarea>
+                </label>
             </div>
 
-            <div class="form-group">
-                <label for="gas-density">Плотность (кг/м³)</label>
-                <input type="number" id="gas-density" name="density"
-                       value="{{ gas.density }}" step="0.0001" min="0">
+            <div class="add-section">
+                <h2 class="add-section-title">⚗️ Параметры газа</h2>
+                <label class="add-label">Молярная масса (г/моль)
+                    <input type="number" name="molar_mass" value="{{ gas.molar_mass }}" class="add-input"
+                           step="0.001" min="0" placeholder="28.014" required>
+                </label>
+                <label class="add-label">Плотность (кг/м³)
+                    <input type="number" name="density" value="{{ gas.density }}" class="add-input"
+                           step="0.0001" min="0" placeholder="1.2506" required>
+                </label>
             </div>
-        </div>
 
-        <!-- Примечание (без сохранения в ЛР1) -->
-        <div class="form-note">
-            ℹ️ В первой лабораторной работе сохранение недоступно.<br>
-            Поля можно редактировать для ознакомления с интерфейсом.
-        </div>
+            <div class="add-actions">
+                <button type="submit" class="btn-filter">💾 Сохранить новый газ</button>
+            </div>
+        </form>
+
+        <!-- Кнопка публикации черновика -->
+        <form action="/publish/{{ gas.id }}" method="POST" class="add-publish-form">
+            <button type="submit" class="btn-publish">🚀 Опубликовать черновик</button>
+        </form>
 
         {% else %}
-
-        <!-- Черновик не найден -->
-        <div class="add-section" style="text-align:center;padding:32px 16px;">
-            <p style="color:#8A96A8;font-size:15px;">Черновик не найден.</p>
-            <a href="/gases/" class="btn-filter" style="margin-top:16px;display:inline-block;width:auto;padding:10px 28px;text-decoration:none;">
+        <!-- =================== ЧЕРНОВИК НЕ НАЙДЕН =================== -->
+        <div class="add-empty">
+            <div class="add-empty-icon">📭</div>
+            <p>Черновик не найден.</p>
+            <a href="/gases/" class="btn-filter" style="display:inline-block;text-decoration:none;padding:10px 24px;margin-top:12px;">
                 К списку газов
             </a>
         </div>
 
+        <!-- Форма добавления нового газа -->
+        <form action="/add/" method="POST" class="add-form" style="margin-top:24px;">
+            <div class="add-section">
+                <h2 class="add-section-title">📋 Новый газ</h2>
+                <label class="add-label">Название газа
+                    <input type="text" name="name" class="add-input" placeholder="например: Неон" required>
+                </label>
+                <label class="add-label">Описание
+                    <textarea name="description" class="add-textarea" placeholder="Описание газа..." required></textarea>
+                </label>
+            </div>
+            <div class="add-section">
+                <h2 class="add-section-title">⚗️ Параметры газа</h2>
+                <label class="add-label">Молярная масса (г/моль)
+                    <input type="number" name="molar_mass" class="add-input" step="0.001" min="0" placeholder="20.180" required>
+                </label>
+                <label class="add-label">Плотность (кг/м³)
+                    <input type="number" name="density" class="add-input" step="0.0001" min="0" placeholder="0.9002" required>
+                </label>
+            </div>
+            <div class="add-section">
+                <h2 class="add-section-title">🗂 Медиаключи (Minio)</h2>
+                <label class="add-label">Ключ изображения
+                    <input type="text" name="image_key" class="add-input" placeholder="neon.jpg">
+                </label>
+                <label class="add-label">Ключ видео
+                    <input type="text" name="video_key" class="add-input" placeholder="neon.mp4">
+                </label>
+            </div>
+            <div class="add-actions">
+                <button type="submit" class="btn-filter">💾 Сохранить как черновик</button>
+            </div>
+        </form>
         {% endif %}
 
     </div>
 
-    <!-- НИЖНЯЯ НАВИГАЦИЯ -->
+    <!-- Нижняя навигация -->
     <nav class="bottom-nav">
         <a href="/feed/" class="nav-item">
-            <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
             Лента
         </a>
         <a href="/add/" class="nav-item active">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
             Добавить
         </a>
         <a href="/gases/" class="nav-item">
@@ -132,7 +162,6 @@
             Газы
         </a>
     </nav>
-
 </div>
 </body>
 </html>

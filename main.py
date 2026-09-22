@@ -3,7 +3,7 @@ from fastapi.staticfiles import StaticFiles
 import uvicorn
 from api.handlers import router
 
-app = FastAPI(title="Газовый каталог")
+app = FastAPI(title="Газовый каталог — Лаба 2")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(router)
 

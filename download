@@ -1,0 +1,6 @@
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=gasuser
+DB_PASSWORD=gaspassword
+DB_NAME=gas_db
+MINIO_BASE=http://localhost:9000/media

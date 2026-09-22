@@ -2,108 +2,112 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=390px, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>Газы — Каталог</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
 <div class="app-shell">
 
-    <h1 class="page-title">Газовый каталог</h1>
+    <!-- Заголовок -->
+    <p class="page-title">Газы</p>
 
-    <!-- ФИЛЬТР ПО МОЛЯРНОЙ МАССЕ (слайдер) -->
-    <form class="filter-block" action="/gases/" method="get">
-        <label for="slider-min">Молярная масса — диапазон (г/моль)</label>
+    <!-- Фильтр по молярной массе (слайдер) -->
+    <form class="filter-block" action="/gases/" method="GET">
+        <label for="range-min">Молярная масса (г/моль)</label>
 
-        <!-- Слайдер минимума -->
         <div class="filter-range-row">
-            <span style="font-size:11px;color:#8A96A8;white-space:nowrap;">от</span>
+            <span style="font-size:12px;color:#8A96A8;min-width:36px;">от</span>
             <input
                 type="range"
-                id="slider-min"
+                id="range-min"
                 name="mass_min"
                 min="{{ global_min }}"
                 max="{{ global_max }}"
-                step="0.1"
+                step="0.001"
                 value="{{ mass_min }}"
-                style="--val: {{ ((mass_min - global_min) / (global_max - global_min) * 100) | int }}%"
-                oninput="document.getElementById('val-min').textContent=parseFloat(this.value).toFixed(1)"
+                style="--val: {{ ((mass_min - global_min) / (global_max - global_min) * 100) if global_max != global_min else 0 }}%"
             >
-            <span class="range-value" id="val-min">{{ "%.1f"|format(mass_min) }}</span>
+            <span class="range-value">{{ "%.3f"|format(mass_min) }}</span>
         </div>
 
-        <!-- Слайдер максимума -->
         <div class="filter-range-row">
-            <span style="font-size:11px;color:#8A96A8;white-space:nowrap;">до</span>
+            <span style="font-size:12px;color:#8A96A8;min-width:36px;">до</span>
             <input
                 type="range"
-                id="slider-max"
+                id="range-max"
                 name="mass_max"
                 min="{{ global_min }}"
                 max="{{ global_max }}"
-                step="0.1"
+                step="0.001"
                 value="{{ mass_max }}"
-                style="--val: {{ ((mass_max - global_min) / (global_max - global_min) * 100) | int }}%"
-                oninput="document.getElementById('val-max').textContent=parseFloat(this.value).toFixed(1)"
+                style="--val: {{ ((mass_max - global_min) / (global_max - global_min) * 100) if global_max != global_min else 100 }}%"
             >
-            <span class="range-value" id="val-max">{{ "%.1f"|format(mass_max) }}</span>
+            <span class="range-value">{{ "%.3f"|format(mass_max) }}</span>
         </div>
 
         <div class="filter-labels">
-            <span>{{ "%.1f"|format(global_min) }} г/моль</span>
-            <span>{{ "%.1f"|format(global_max) }} г/моль</span>
+            <span>{{ "%.3f"|format(global_min) }}</span>
+            <span>{{ "%.3f"|format(global_max) }}</span>
         </div>
 
-        <!-- Кнопка применить (белая, скруглённая, чёрная обводка) -->
         <button type="submit" class="btn-filter">Применить фильтр</button>
     </form>
 
-    <!-- СЕТКА КАРТОЧЕК 2 СТОЛБЦА -->
+    <!-- Сетка карточек -->
     <div class="gases-grid">
-
         {% if gases %}
             {% for gas in gases %}
-            <a href="/feed/{{ gas.id }}" class="gas-card-link">
-                <div class="gas-card">
-                    <img
-                        src="{{ gas.image_url }}"
-                        alt="{{ gas.name }}"
-                        class="gas-card-img"
-                        onerror="this.src='/static/img/placeholder.jpg'"
-                    >
-                    <div class="gas-card-body">
-                        <div class="gas-card-name">{{ gas.name }}</div>
-                        <div class="gas-card-meta">М = {{ gas.molar_mass }} г/моль</div>
-                        <div class="gas-card-meta">ρ = {{ gas.density }} кг/м³</div>
-                        <div class="gas-card-likes">
-                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
-                                         2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
-                                         C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5
-                                         c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                            </svg>
-                            {{ gas.likes_count }}
+            <div class="gas-card-wrap">
+                <a href="/feed/{{ gas.id }}" class="gas-card-link">
+                    <div class="gas-card">
+                        <img
+                            src="{{ gas.image_url if gas.image_url else '/static/img/placeholder.svg' }}"
+                            alt="{{ gas.name }}"
+                            class="gas-card-img"
+                            onerror="this.src='/static/img/placeholder.svg'"
+                        >
+                        <div class="gas-card-body">
+                            <div class="gas-card-name">{{ gas.name }}</div>
+                            <div class="gas-card-meta">М = {{ "%.3f"|format(gas.molar_mass) }} г/моль</div>
+                            <div class="gas-card-meta">ρ = {{ "%.4f"|format(gas.density) }} кг/м³</div>
+                            <div class="gas-card-likes">
+                                <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                {{ gas.likes_count }}
+                            </div>
                         </div>
                     </div>
+                </a>
+                <!-- Кнопки действий (Лаба 2: лайк + удаление) -->
+                <div class="gas-card-actions">
+                    <!-- Лайк через ORM -->
+                    <form action="/like/{{ gas.id }}" method="POST" style="flex:1;">
+                        <input type="hidden" name="user_id" value="1">
+                        <button type="submit" class="btn-action btn-like {% if gas.liked %}liked{% endif %}">
+                            {% if gas.liked %}♥ Убрать{% else %}♡ Лайк{% endif %}
+                        </button>
+                    </form>
+                    <!-- Удаление через raw SQL / курсор -->
+                    <form action="/delete/{{ gas.id }}" method="POST" style="flex:1;"
+                          onsubmit="return confirm('Удалить газ «{{ gas.name }}»?');">
+                        <button type="submit" class="btn-action btn-delete">🗑 Удалить</button>
+                    </form>
                 </div>
-            </a>
+            </div>
             {% endfor %}
         {% else %}
-            <div class="empty-state">
-                Газы не найдены.<br>Попробуйте изменить диапазон.
-            </div>
+            <div class="empty-state">Газы не найдены</div>
         {% endif %}
-
     </div>
 
-    <!-- НИЖНЯЯ НАВИГАЦИЯ -->
+    <!-- Нижняя навигация -->
     <nav class="bottom-nav">
         <a href="/feed/" class="nav-item">
-            <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
             Лента
         </a>
         <a href="/add/" class="nav-item">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
             Добавить
         </a>
         <a href="/gases/" class="nav-item active">
@@ -111,7 +115,6 @@
             Газы
         </a>
     </nav>
-
 </div>
 </body>
 </html>

@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=390px, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>{% if gas %}{{ gas.name }}{% else %}Лента{% endif %} — Газовый каталог</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
@@ -11,88 +11,102 @@
 
 {% if gas %}
 
-<!-- ЛЕНТА: видео на весь экран, контент поверх -->
 <div class="feed-page">
 
-    <!-- Видео (вертикальное) -->
-    <video class="feed-video" autoplay muted loop playsinline>
-        <source src="{{ gas.video_url }}" type="video/mp4">
-    </video>
+    <!-- Видео-фон (автовоспроизведение, без звука) -->
+    <video
+        class="feed-video"
+        src="{{ gas.video_url if gas.video_url else '' }}"
+        autoplay
+        loop
+        muted
+        playsinline
+        poster="{{ gas.image_url if gas.image_url else '/static/img/placeholder.svg' }}"
+    ></video>
 
-    <!-- Градиентная подложка снизу -->
+    <!-- Фолбэк-изображение, если видео не загрузилось -->
+    <img
+        class="feed-img-fallback"
+        src="{{ gas.image_url if gas.image_url else '/static/img/placeholder.svg' }}"
+        alt="{{ gas.name }}"
+        onerror="this.src='/static/img/placeholder.svg'"
+    >
+
+    <!-- Затемнение снизу -->
     <div class="feed-gradient"></div>
 
     <!-- Контент поверх видео -->
     <div class="feed-overlay">
 
-        <!-- Левая колонка: название + описание с Ещё/Скрыть -->
+        <!-- Левая часть: название + описание -->
         <div class="feed-left">
             <div class="feed-gas-name">{{ gas.name }}</div>
 
             <div class="feed-desc-wrap">
-                <!-- Чекбокс для переключения (без JS) -->
                 <input type="checkbox" class="feed-desc-toggle" id="desc-toggle">
-
-                <p class="feed-desc-short">{{ gas.description }}</p>
+                <p class="feed-desc-short" style="-webkit-line-clamp:2;">
+                    {{ gas.description }}
+                </p>
                 <p class="feed-desc-full">{{ gas.description }}</p>
-
-                <label for="desc-toggle" class="feed-desc-btn">Ещё ▾</label>
+                <label class="feed-desc-btn" for="desc-toggle">
+                    <span class="more-label">Ещё ▾</span>
+                    <span class="less-label">Скрыть ▴</span>
+                </label>
             </div>
         </div>
 
-        <!-- Правая колонка: параметры + лайки + кнопка -->
+        <!-- Правая часть: поля + лайк + кнопка следующий -->
         <div class="feed-right">
 
-            <!-- Параметры по теме -->
-            <div class="feed-params">
-                <div class="feed-param">
-                    Молярная масса
-                    <span>{{ gas.molar_mass }} г/моль</span>
+            <!-- Поля по теме -->
+            <div class="feed-props">
+                <div class="feed-prop">
+                    <span class="feed-prop-label">Молярная масса</span>
+                    <span class="feed-prop-value">{{ "%.3f"|format(gas.molar_mass) }} г/моль</span>
                 </div>
-                <div class="feed-param">
-                    Плотность
-                    <span>{{ gas.density }} кг/м³</span>
+                <div class="feed-prop">
+                    <span class="feed-prop-label">Плотность</span>
+                    <span class="feed-prop-value">{{ "%.4f"|format(gas.density) }} кг/м³</span>
                 </div>
             </div>
 
-            <!-- Лайки -->
-            <div class="feed-likes">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
-                             2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
-                             C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5
-                             c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                </svg>
-                <span class="feed-likes-count">{{ likes_count }}</span>
-            </div>
+            <!-- Лайк (Лаба 2: через ORM) -->
+            <form action="/like/{{ gas.id }}" method="POST" class="feed-like-form">
+                <input type="hidden" name="user_id" value="1">
+                <button type="submit" class="feed-like-btn {% if liked %}liked{% endif %}">
+                    {% if liked %}♥{% else %}♡{% endif %}
+                </button>
+                <span class="feed-like-count">{{ likes_count }}</span>
+            </form>
 
-            <!-- Кнопка "Следующий" -->
-            <a href="/feed/{{ gas.id }}?next=true" class="btn-next">Следующий →</a>
+            <!-- Следующий -->
+            <a href="/feed/{{ gas.id }}?next=true" class="feed-next-btn">Следующий →</a>
 
         </div>
     </div>
-
 </div>
 
 {% else %}
 
-<!-- Газ не найден -->
-<div class="feed-empty">
+<div class="empty-feed">
+    <div class="empty-feed-icon">🌬️</div>
     <h2>Газ не найден</h2>
     <p>Нет доступных опубликованных газов.</p>
-    <a href="/gases/" class="btn-next" style="margin-top:8px;">К списку</a>
+    <a href="/gases/" class="btn-filter" style="margin-top:16px;display:inline-block;text-decoration:none;padding:10px 24px;">
+        К списку
+    </a>
 </div>
 
 {% endif %}
 
-<!-- НИЖНЯЯ НАВИГАЦИЯ -->
+<!-- Нижняя навигация -->
 <nav class="bottom-nav">
     <a href="/feed/" class="nav-item active">
-        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
         Лента
     </a>
     <a href="/add/" class="nav-item">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
         Добавить
     </a>
     <a href="/gases/" class="nav-item">

@@ -1,12 +1,32 @@
 version: "3.8"
 
 services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: gas-postgres
+    environment:
+      POSTGRES_USER: gasuser
+      POSTGRES_PASSWORD: gaspassword
+      POSTGRES_DB: gas_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer:latest
+    container_name: gas-adminer
+    ports:
+      - "8081:8080"
+    depends_on:
+      - postgres
+
   minio:
     image: minio/minio:latest
     container_name: gas-minio
     ports:
-      - "9000:9000"   # S3 API
-      - "9001:9001"   # Web Console
+      - "9000:9000"
+      - "9001:9001"
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
@@ -15,4 +35,5 @@ services:
       - minio_data:/data
 
 volumes:
+  postgres_data:
   minio_data:
