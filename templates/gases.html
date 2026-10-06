@@ -78,17 +78,10 @@
                         </div>
                     </div>
                 </a>
-                <!-- Кнопки действий (Лаба 2: лайк + удаление) -->
+                <!-- Действия с услугой -->
                 <div class="gas-card-actions">
-                    <!-- Лайк через ORM -->
-                    <form action="/like/{{ gas.id }}" method="POST" style="flex:1;">
-                        <input type="hidden" name="user_id" value="1">
-                        <button type="submit" class="btn-action btn-like {% if gas.liked %}liked{% endif %}">
-                            {% if gas.liked %}♥ Убрать{% else %}♡ Лайк{% endif %}
-                        </button>
-                    </form>
                     <!-- Удаление через raw SQL / курсор -->
-                    <form action="/delete/{{ gas.id }}" method="POST" style="flex:1;"
+                    <form action="/delete/{{ gas.id }}" method="POST" style="width:100%;"
                           onsubmit="return confirm('Удалить газ «{{ gas.name }}»?');">
                         <button type="submit" class="btn-action btn-delete">🗑 Удалить</button>
                     </form>

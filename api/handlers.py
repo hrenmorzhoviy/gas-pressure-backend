@@ -9,9 +9,12 @@ api/handlers.py — Все маршруты приложения (Лаба 2).
   - Публикация черновика через POST /publish/{gas_id}
 """
 
+from pathlib import Path
 from typing import Optional
+from uuid import uuid4
 
-from fastapi import APIRouter, Depends, Form, Query, Request
+import aiofiles
+from fastapi import APIRouter, Depends, File, Form, Query, Request, UploadFile
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import func, select, text
@@ -26,6 +29,9 @@ templates = Jinja2Templates(directory="templates")
 
 # ID тестового пользователя (в Лабе 2 авторизация не реализуется)
 TEST_USER_ID = 1
+DEFAULT_IMAGE_URL = "/static/img/default.png"
+DEFAULT_VIDEO_URL = "/static/video/default.mp4"
+UPLOADS_DIR = Path("static/uploads")
 
 
 # ---------------------------------------------------------------
@@ -223,12 +229,24 @@ async def post_add(
     molar_mass: float = Form(...),
     density: float = Form(...),
     description: str = Form(...),
-    image_key: str = Form(""),
-    video_key: str = Form(""),
+    image: UploadFile | None = File(None),
+    video: UploadFile | None = File(None),
     db: AsyncSession = Depends(get_db),
 ):
-    from core.config import settings
-    MINIO_BASE = settings.MINIO_BASE
+    async def save_media(upload: UploadFile | None, expected_type: str) -> tuple[str, str]:
+        if upload is None or not upload.filename:
+            return "", DEFAULT_IMAGE_URL if expected_type == "image" else DEFAULT_VIDEO_URL
+        if not upload.content_type or not upload.content_type.startswith(f"{expected_type}/"):
+            return "", DEFAULT_IMAGE_URL if expected_type == "image" else DEFAULT_VIDEO_URL
+        suffix = Path(upload.filename).suffix.lower()
+        filename = f"{expected_type}-{uuid4().hex}{suffix}"
+        UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+        async with aiofiles.open(UPLOADS_DIR / filename, "wb") as output:
+            await output.write(await upload.read())
+        return filename, f"/static/uploads/{filename}"
+
+    image_key, image_url = await save_media(image, "image")
+    video_key, video_url = await save_media(video, "video")
 
     new_gas = Gas(
         name=name,
@@ -237,8 +255,8 @@ async def post_add(
         description=description,
         image_key=image_key,
         video_key=video_key,
-        image_url=f"{MINIO_BASE}/{image_key}" if image_key else "",
-        video_url=f"{MINIO_BASE}/{video_key}" if video_key else "",
+        image_url=image_url,
+        video_url=video_url,
         status="draft",
         is_deleted=False,
         creator_id=TEST_USER_ID,

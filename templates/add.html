@@ -29,10 +29,10 @@
                 <div class="add-media-item">
                     <label class="add-media-label">Изображение</label>
                     <img
-                        src="{{ gas.image_url if gas.image_url else '/static/img/placeholder.svg' }}"
+                        src="{{ gas.image_url if gas.image_url else '/static/img/default.png' }}"
                         alt="{{ gas.name }}"
                         class="add-preview-img"
-                        onerror="this.src='/static/img/placeholder.svg'"
+                        onerror="this.src='/static/img/default.png'"
                     >
                 </div>
                 <!-- Видео -->
@@ -45,25 +45,24 @@
                         autoplay loop muted playsinline
                     ></video>
                     {% else %}
-                    <div class="add-no-video">Видео не загружено</div>
+                    <video src="/static/video/default.mp4" class="add-preview-video" autoplay loop muted playsinline></video>
                     {% endif %}
                 </div>
             </div>
         </div>
 
         <!-- =================== ФОРМА ДОБАВЛЕНИЯ =================== -->
-        <form action="/add/" method="POST" class="add-form">
+        <form action="/add/" method="POST" enctype="multipart/form-data" class="add-form">
 
             <div class="add-section">
-                <h2 class="add-section-title">🗂 Медиаключи (Minio)</h2>
-                <label class="add-label">Ключ изображения (image_key)
-                    <input type="text" name="image_key" value="{{ gas.image_key }}" class="add-input"
-                           placeholder="например: hydrogen.jpg">
+                <h2 class="add-section-title">📎 Фото и видео</h2>
+                <label class="add-label">Фотография
+                    <input type="file" name="image" class="add-input" accept="image/*">
                 </label>
-                <label class="add-label">Ключ видео (video_key)
-                    <input type="text" name="video_key" value="{{ gas.video_key }}" class="add-input"
-                           placeholder="например: hydrogen.mp4">
+                <label class="add-label">Короткое видео
+                    <input type="file" name="video" class="add-input" accept="video/*">
                 </label>
+                <p class="add-media-hint">Если файл не выбран, будет использован файл по умолчанию.</p>
             </div>
 
             <div class="add-section">
@@ -111,7 +110,27 @@
         </div>
 
         <!-- Форма добавления нового газа -->
-        <form action="/add/" method="POST" class="add-form" style="margin-top:24px;">
+        <form action="/add/" method="POST" enctype="multipart/form-data" class="add-form" style="margin-top:24px;">
+            <div class="add-section">
+                <h2 class="add-section-title">📎 Фото и видео</h2>
+                <div class="add-media-preview">
+                    <div class="add-media-item">
+                        <label class="add-media-label">Фото по умолчанию</label>
+                        <img src="/static/img/default.png" alt="Фото по умолчанию" class="add-preview-img">
+                    </div>
+                    <div class="add-media-item">
+                        <label class="add-media-label">Видео по умолчанию</label>
+                        <video src="/static/video/default.mp4" class="add-preview-video" autoplay loop muted playsinline></video>
+                    </div>
+                </div>
+                <label class="add-label">Выбрать фотографию
+                    <input type="file" name="image" class="add-input" accept="image/*">
+                </label>
+                <label class="add-label">Выбрать короткое видео
+                    <input type="file" name="video" class="add-input" accept="video/*">
+                </label>
+                <p class="add-media-hint">Оба поля необязательные. Без выбора сохранятся медиа по умолчанию.</p>
+            </div>
             <div class="add-section">
                 <h2 class="add-section-title">📋 Новый газ</h2>
                 <label class="add-label">Название газа
@@ -128,15 +147,6 @@
                 </label>
                 <label class="add-label">Плотность (кг/м³)
                     <input type="number" name="density" class="add-input" step="0.0001" min="0" placeholder="0.9002" required>
-                </label>
-            </div>
-            <div class="add-section">
-                <h2 class="add-section-title">🗂 Медиаключи (Minio)</h2>
-                <label class="add-label">Ключ изображения
-                    <input type="text" name="image_key" class="add-input" placeholder="neon.jpg">
-                </label>
-                <label class="add-label">Ключ видео
-                    <input type="text" name="video_key" class="add-input" placeholder="neon.mp4">
                 </label>
             </div>
             <div class="add-actions">

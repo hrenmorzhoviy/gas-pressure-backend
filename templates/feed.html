@@ -21,15 +21,15 @@
         loop
         muted
         playsinline
-        poster="{{ gas.image_url if gas.image_url else '/static/img/placeholder.svg' }}"
+        poster="{{ gas.image_url if gas.image_url else '/static/img/default.png' }}"
     ></video>
 
     <!-- Фолбэк-изображение, если видео не загрузилось -->
     <img
         class="feed-img-fallback"
-        src="{{ gas.image_url if gas.image_url else '/static/img/placeholder.svg' }}"
+        src="{{ gas.image_url if gas.image_url else '/static/img/default.png' }}"
         alt="{{ gas.name }}"
-        onerror="this.src='/static/img/placeholder.svg'"
+        onerror="this.src='/static/img/default.png'"
     >
 
     <!-- Затемнение снизу -->
