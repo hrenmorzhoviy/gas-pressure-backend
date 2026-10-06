@@ -4,54 +4,54 @@
 -- ============================================================
 
 -- Тестовый пользователь (user_id=1 используется для лайков)
-INSERT INTO users (id, username) VALUES (1, 'test_user')
+INSERT INTO users (id, username, password_hash) VALUES (1, 'test_user', 'change-me')
 ON CONFLICT (id) DO NOTHING;
 
 -- Заполнение газов (аналог коллекции из Лабы 1)
 -- MINIO_BASE = http://localhost:9000/media
-INSERT INTO gases (id, name, molar_mass, density, description, image_key, video_key, image_url, video_url, status, is_deleted)
+INSERT INTO gases (id, name, molar_mass, density, description, image_key, video_key, image_url, video_url, status, is_deleted, creator_id)
 VALUES
   (1, 'Азот', 28.014, 1.2506,
    'Азот — бесцветный инертный газ без запаха, составляющий около 78% атмосферы Земли. Широко применяется в промышленности: при производстве аммиака, в качестве защитной среды при сварке и металлообработке, а также в медицине для криоконсервации.',
    'nitrogen.jpg', 'nitrogen.mp4',
    'http://localhost:9000/media/nitrogen.jpg', 'http://localhost:9000/media/nitrogen.mp4',
-   'published', false),
+   'published', false, 1),
 
   (2, 'Кислород', 31.998, 1.4290,
    'Кислород — активный газ, необходимый для дыхания всех аэробных организмов и поддержания горения. Второй по распространённости компонент атмосферы Земли (около 21%). Применяется в металлургии, медицине и ракетных двигателях.',
    'oxygen.jpg', 'oxygen.mp4',
    'http://localhost:9000/media/oxygen.jpg', 'http://localhost:9000/media/oxygen.mp4',
-   'published', false),
+   'published', false, 1),
 
   (3, 'Гелий', 4.003, 0.1785,
    'Гелий — лёгкий инертный одноатомный газ, второй по лёгкости элемент после водорода. Используется в аэростатах, криогенике, медицинских томографах (МРТ) и как охладитель сверхпроводящих магнитов.',
    'helium.jpg', 'helium.mp4',
    'http://localhost:9000/media/helium.jpg', 'http://localhost:9000/media/helium.mp4',
-   'published', false),
+   'published', false, 1),
 
   (4, 'Аргон', 39.948, 1.7837,
    'Аргон — инертный одноатомный газ, третий по распространённости в атмосфере (около 0,93%). Применяется в сварке и резке металлов как защитная среда, в производстве электрических ламп накаливания и в лазерных технологиях.',
    'argon.jpg', 'argon.mp4',
    'http://localhost:9000/media/argon.jpg', 'http://localhost:9000/media/argon.mp4',
-   'published', false),
+   'published', false, 1),
 
   (5, 'Углекислый газ', 44.010, 1.9640,
    'Диоксид углерода (CO₂) — бесцветный газ без запаха. Продукт горения органического топлива и клеточного дыхания. Используется в пожаротушении, газировании напитков и как промышленный хладагент.',
    'co2.jpg', 'co2.mp4',
    'http://localhost:9000/media/co2.jpg', 'http://localhost:9000/media/co2.mp4',
-   'published', false),
+   'published', false, 1),
 
   (6, 'Неон', 20.180, 0.9002,
    'Неон — инертный одноатомный газ, светящийся характерным оранжево-красным светом при прохождении электрического тока. Применяется в рекламных неоновых трубках, лазерах и плазменных панелях.',
    'neon.jpg', 'neon.mp4',
    'http://localhost:9000/media/neon.jpg', 'http://localhost:9000/media/neon.mp4',
-   'deleted', true),
+   'deleted', true, 1),
 
   (7, 'Водород', 2.016, 0.0899,
    'Водород — самый лёгкий и самый распространённый элемент во Вселенной. Перспективный энергоноситель будущего, применяется в топливных элементах, ракетном топливе и химической промышленности.',
    'hydrogen.jpg', 'hydrogen.mp4',
    'http://localhost:9000/media/hydrogen.jpg', 'http://localhost:9000/media/hydrogen.mp4',
-   'draft', false)
+   'draft', false, 1)
 ON CONFLICT (id) DO NOTHING;
 
 -- Начальные лайки для test_user (id=1)

@@ -241,6 +241,7 @@ async def post_add(
         video_url=f"{MINIO_BASE}/{video_key}" if video_key else "",
         status="draft",
         is_deleted=False,
+        creator_id=TEST_USER_ID,
     )
     db.add(new_gas)
     await db.commit()

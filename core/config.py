@@ -8,6 +8,10 @@ class Settings(BaseSettings):
     DB_PASSWORD: str = "gaspassword"
     DB_NAME: str = "gas_db"
     MINIO_BASE: str = "http://localhost:9000/media"
+    MINIO_HOST: str = "localhost:9000"
+    MINIO_ACCESS_KEY: str = "minioadmin"
+    MINIO_SECRET_KEY: str = "minioadmin"
+    MINIO_BUCKET: str = "gas-media"
 
     @property
     def DATABASE_URL(self) -> str:

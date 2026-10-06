@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1200" role="img" aria-label="Изображение газа по умолчанию">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#0b1b32"/><stop offset="1" stop-color="#126782"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="1200" fill="url(#bg)"/>
+  <g fill="none" stroke="#67e8f9" stroke-width="9" opacity=".8">
+    <circle cx="450" cy="520" r="180"/><ellipse cx="450" cy="520" rx="280" ry="95" transform="rotate(30 450 520)"/>
+    <ellipse cx="450" cy="520" rx="280" ry="95" transform="rotate(-30 450 520)"/>
+  </g>
+  <circle cx="450" cy="520" r="48" fill="#e0f2fe"/>
+  <text x="450" y="820" text-anchor="middle" fill="#e0f2fe" font-family="Arial,sans-serif" font-size="44">Газовый каталог</text>
+  <text x="450" y="880" text-anchor="middle" fill="#a5f3fc" font-family="Arial,sans-serif" font-size="28">изображение по умолчанию</text>
+</svg>
